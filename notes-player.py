@@ -22,9 +22,17 @@ note_frequencies =  {
 
 DEFAULT_OCTAVE = 4
 
-def print_format_error(substr: str):
-    error = str.encode("Error: invalid note format: '" + substr + "' in '" + note + "'")
+def print_note_error(substr: str):
+    error = str.encode("Error: invalid note format: '" + substr + "' in '" + note + "'" + os.linesep)
     os.write(saved_fd, error)
+
+def print_duration_error():
+    error = str.encode("Error: invalid duration format in '" + duration + "'" + os.linesep)
+    os.write(saved_fd, error)
+
+def try_help_message():
+    message = str.encode("Try '" + os.path.basename(__file__) + " --help'" + os.linesep)
+    os.write(saved_fd, message)
 
 def set_semitone(freq: float, symbol: str):
     if freq == 0:
@@ -34,7 +42,7 @@ def set_semitone(freq: float, symbol: str):
     elif symbol == 'b':
         freq /= (2 ** (1. / 12.))
     else:
-        print_format_error(symbol)
+        print_note_error(symbol)
         freq = 0
     return freq
 
@@ -47,7 +55,7 @@ def set_octave(freq: float, octave: str):
             raise ValueError('octave value error')
         freq *= (2 ** octave_value)
     except:
-        print_format_error(octave)
+        print_note_error(octave)
         freq = 0
     return freq
 
@@ -56,7 +64,7 @@ def set_frequency(letter: str):
     try:
         freq = note_frequencies[upper_case_letter]
     except:
-        print_format_error(letter)
+        print_note_error(letter)
         freq = 0
     return freq
 
@@ -74,15 +82,26 @@ def compute_note(note: str):
         freq = set_octave(freq, note[1:2])
         freq = set_semitone(freq, note[2:3])
     else:
-        print('333')
+        error = str.encode("Error: invalid format for the '" + note + "' note" + os.linesep)
+        os.write(saved_fd, error)
+        try_help_message()
     return freq
 
-freq = 440.0
 for line in sys.stdin:
     line = line.rstrip()
-    note, duration = line.split('-')
-    freq = compute_note(note)
-    sine(freq, 0.5)
+    if len(line) > 0:
+        try:
+            note, duration = line.split('-')
+        except:
+            note, duration = line, '.5'
+        freq = compute_note(note)
+        try:
+            duration_value = float(duration)
+        except:
+            print_duration_error()
+            freq = 0
+        if freq != 0:
+            sine(freq, duration_value)
 
 os.dup2(saved_fd, 2)
 os.close(null_fd)
