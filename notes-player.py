@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 
 null_fd = os.open(os.devnull, os.O_RDWR)
 saved_fd = os.dup(2)
