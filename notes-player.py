@@ -188,6 +188,9 @@ def main():
     stream.close()
     p.terminate()
 
+    if input_file is not sys.stdin:
+        input_file.close
+
 if __name__ == "__main__":
     main()
 
