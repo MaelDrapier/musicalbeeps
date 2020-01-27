@@ -32,17 +32,21 @@ def setup_argparse():
                                     description='''\
     A python script playing musical notes
 
-    how to use:
-        Notes are read from a file passed as argument, or directly from the
-        standard input. Each note must be on a new line.
+how to use:
+    Notes are read from a file passed as argument, or directly from the
+    standard input. Each note must be on a new line.
 
-    note format:
-        Each note must be formatted like so: 'A5#:1.5' (without quotes)
-        Where:
-            - 'A' is the note (between A and G, can be lowercase)
-            - '5' is the octave (between 0 and 8, default=4)
-            - '#' (or 'b') is optional and used to play a sharp or flat note.
-            - ':1.5' is the duration of the note (1.5 seconds here, default=0.5)
+note format:
+    Each note must be formatted like so: 'A5#:1.5' (without quotes)
+    Where:
+        - 'A' is the note (between A and G, can be lowercase)
+        - '5' is the octave (between 0 and 8, default=4)
+        - '#' (or 'b') is optional and used to play a sharp or flat note
+        - ':1.5' is the duration of the note (1.5 seconds here, default=0.5)
+
+sleep:
+    You can pause the player by replacing the note by the 'sleep' word.
+    For exemple, 'sleep:5' will pause the player for 5 seconds.
     ''')
     parser.add_argument("file",
                         nargs="?",
