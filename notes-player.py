@@ -3,13 +3,19 @@
 import os
 import sys
 import time
+import pyaudio
+import numpy as np
 
 null_fd = os.open(os.devnull, os.O_RDWR)
 saved_fd = os.dup(2)
 os.dup2(null_fd, 2)
 
-from pysine import sine
+p = pyaudio.PyAudio()
 
+stream =  p.open(format=pyaudio.paFloat32,
+                channels=1,
+                rate=44100,
+                output=True)
 
 note_frequencies =  {
     'A': 27.50000,
@@ -22,6 +28,8 @@ note_frequencies =  {
 }
 
 DEFAULT_OCTAVE = 4
+RATE = 44100
+VOLUME = 0.4
 
 def print_note_error(substr: str):
     error = str.encode("Error: invalid note format: '" + substr + "' in '" + note + "'" + os.linesep)
@@ -88,6 +96,16 @@ def compute_note(note: str):
         try_help_message()
     return freq
 
+def play_sound(freq: float, duration: float):
+    frames = [np.sin(np.arange(int(duration * RATE)) * (float(freq) * (np.pi * 2) / RATE)).astype(np.float32)]
+    frames = np.concatenate(frames) * VOLUME
+    fade = 1000
+    fade_in = np.arange(0., 1., 1/fade)
+    fade_out = np.arange(1., 0., -1/fade)
+    frames[:fade] = np.multiply(frames[:fade], fade_in)
+    frames[-fade:] = np.multiply(frames[-fade:], fade_out)
+    stream.write(frames.tostring())
+
 for line in sys.stdin:
     line = line.rstrip()
     if len(line) > 0:
@@ -102,7 +120,12 @@ for line in sys.stdin:
             print_duration_error()
             freq = 0
         if freq != 0:
-            sine(freq, duration_value)
+            play_sound(freq, duration_value)
+
+time.sleep(0.1)
+stream.stop_stream()
+stream.close()
+p.terminate()
 
 os.dup2(saved_fd, 2)
 os.close(null_fd)
