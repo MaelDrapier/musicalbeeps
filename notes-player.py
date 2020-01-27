@@ -50,8 +50,8 @@ class NotesPlayer:
 
     def __del__(self):
         # stop and close pyaudio
-        time.sleep(0.1)
         if hasattr(self, 'pyaudio') and hasattr(self, 'stream'):
+            time.sleep(0.1)
             self.stream.stop_stream()
             self.stream.close()
             self.pyaudio.terminate()
@@ -190,12 +190,10 @@ pause:
     return args, input_file
 
 
-def main():
-    args, input_file = setupArgparse()
-
+def playerLoop(args, inputFile):
     notesPlayer = NotesPlayer(args.volume)
 
-    for line in input_file:
+    for line in inputFile:
         validDuration = True
         line = line.rstrip()
         if len(line) > 0:
@@ -207,15 +205,19 @@ def main():
                 duration = float(durationStr)
             except:
                 validDuration = False
-                print('error')
+                error = str.encode("Error: invalid duration: '" + durationStr + "'" + os.linesep)
+                os.write(notesPlayer.stderrFd, error)
             if validDuration:
                 notesPlayer.playNote(note, duration)
 
+
+def main():
+    args, inputFile = setupArgparse()
+    playerLoop(args, inputFile)
     if not args.silent:
         print("Done")
-
-    if input_file is not sys.stdin:
-        input_file.close
+    if inputFile is not sys.stdin:
+        inputFile.close
 
 
 if __name__ == "__main__":
