@@ -136,6 +136,8 @@ class NotesPlayer:
                 self.__printPlayedNote(note, duration)
                 self.__writeStream(duration)
 
+
+
 def setupArgparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                     description='''\
@@ -153,9 +155,9 @@ note format:
         - '#' (or 'b') is optional and used to play a sharp or flat note
         - ':1.5' is the duration of the note (1.5 seconds here, default=0.5)
 
-sleep:
-    You can pause the player by replacing the note by the 'sleep' word.
-    For exemple, 'sleep:5' will pause the player for 5 seconds.
+pause:
+    You can pause the player by replacing the note by the 'pause' word.
+    For exemple, 'pause:5' will pause the player for 5 seconds.
     ''')
     parser.add_argument("file",
                         nargs="?",
@@ -169,6 +171,7 @@ sleep:
     else:
         input_file = sys.stdin
     return args, input_file
+
 
 def main():
     args, input_file = setupArgparse()
