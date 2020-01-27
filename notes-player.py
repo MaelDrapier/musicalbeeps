@@ -5,6 +5,14 @@ import sys
 import time
 import pyaudio
 import numpy as np
+import argparse
+
+# argparse setup
+parser = argparse.ArgumentParser()
+parser.add_argument("--silent",
+                    help="disable player output",
+                    action='store_true')
+args = parser.parse_args()
 
 VOLUME = 0.3
 DEFAULT_OCTAVE = 4
@@ -44,6 +52,11 @@ def print_duration_error(duration: str, note: str):
 def try_help_message():
     message = str.encode("Try '" + os.path.basename(__file__) + " --help'" + os.linesep)
     os.write(error_fd, message)
+
+def print_played_note(note: str, duration: float):
+    if not args.silent:
+        print("Playing " + note + " (" + str(duration) + "s)")
+
 
 def set_semitone(freq: float, symbol: str, note: str):
     if freq == 0:
@@ -123,7 +136,7 @@ for line in sys.stdin:
             print_duration_error(duration, note)
             freq = 0
         if freq != 0:
-            print("Playing " + note + " (" + str(duration_value) + "s)")
+            print_played_note(note, duration_value)
             play_sound(stream, freq, duration_value)
 
 print("Done")
