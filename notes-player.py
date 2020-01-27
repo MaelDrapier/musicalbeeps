@@ -8,10 +8,14 @@ import pyaudio
 import numpy as np
 
 class NotesPlayer:
-    def __init__(self, volume: float = 0.3,
+    def __init__(self, volume: float = 0.5,
                 muteOutput: bool = False,
                 muteStderr: bool = True):
         self.muteStderr = muteStderr
+
+        if volume < 0 or volume > 1:
+            self.muteStderr = False
+            raise ValueError("Volume must be a float between 0 and 1")
 
         # hide portaudio warnings by muting stderr
         self.stderrFd = os.dup(2)
@@ -43,17 +47,20 @@ class NotesPlayer:
                                     rate=self.rate,
                                     output=True)
 
+
     def __del__(self):
         # stop and close pyaudio
         time.sleep(0.1)
-        self.stream.stop_stream()
-        self.stream.close()
-        self.pyaudio.terminate()
+        if hasattr(self, 'pyaudio') and hasattr(self, 'stream'):
+            self.stream.stop_stream()
+            self.stream.close()
+            self.pyaudio.terminate()
 
         # set stderr back to its value
         if self.muteStderr:
             os.dup2(self.stderrFd, 2)
             os.close(self.nullFd)
+
 
     def __setBaseFrequency(self, note: str):
         letter = note[:1].upper()
@@ -63,6 +70,7 @@ class NotesPlayer:
             self.validNote = False
             error = str.encode("Error: invalid note: '" + note[:1] + "'" + os.linesep)
             os.write(self.stderrFd, error)
+
 
     def __setOctave(self, octave: str = '4'):
         if not self.validNote:
@@ -77,6 +85,7 @@ class NotesPlayer:
             error = str.encode("Error: invalid octave: '" + octave + "'" + os.linesep)
             os.write(self.stderrFd, error)
 
+
     def __setSemitone(self, symbol: str):
         if not self.validNote:
             return
@@ -88,6 +97,7 @@ class NotesPlayer:
             self.validNote = False
             error = str.encode("Error: invalid symbol: '" + symbol + "'" + os.linesep)
             os.write(self.stderrFd, error)
+
 
     def __calc_frequency(self, note: str):
         self.__setBaseFrequency(note)
@@ -107,6 +117,7 @@ class NotesPlayer:
             error = str.encode("Error: invalid note: '" + note + "'" + os.linesep)
             os.write(self.stderrFd, error)
 
+
     def __writeStream(self, duration: float):
         frames = [np.sin(np.arange(int(duration * self.rate)) * (float(self.freq) * (np.pi * 2) / self.rate)).astype(np.float32)]
         frames = np.concatenate(frames) * self.volume
@@ -117,6 +128,7 @@ class NotesPlayer:
         frames[-fade:] = np.multiply(frames[-fade:], fade_out)
         self.stream.write(frames.tostring())
 
+
     def __printPlayedNote(self, note: str, duration: float):
         if self.muteOutput or not self.validNote:
             return
@@ -124,6 +136,7 @@ class NotesPlayer:
             print("Pausing for " + str(duration) + "s")
         else:
             print("Playing " + note + " (" + format(self.freq, '.2f') + " Hz) for " + str(duration) + "s")
+
 
     def playNote(self, note: str, duration: float = 0.5):
         self.validNote = True
@@ -140,8 +153,8 @@ class NotesPlayer:
 
 def setupArgparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                    description='''\
-    A python script playing musical notes
+                                    description='A python script playing musical notes',
+                                    epilog='''\
 
 how to use:
     Notes are read from a file passed as argument, or directly from the
@@ -165,6 +178,10 @@ pause:
     parser.add_argument("--silent",
                         help="disable player output",
                         action='store_true')
+    parser.add_argument("--volume",
+                        help="volume between 0 and 1 (default=0.5)",
+                        type=float,
+                        default=0.5)
     args = parser.parse_args()
     if args.file:
         input_file = open(args.file, 'r')
@@ -176,7 +193,7 @@ pause:
 def main():
     args, input_file = setupArgparse()
 
-    notesPlayer = NotesPlayer()
+    notesPlayer = NotesPlayer(args.volume)
 
     for line in input_file:
         validDuration = True
@@ -199,6 +216,7 @@ def main():
 
     if input_file is not sys.stdin:
         input_file.close
+
 
 if __name__ == "__main__":
     main()
