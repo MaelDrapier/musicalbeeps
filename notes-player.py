@@ -8,11 +8,34 @@ import numpy as np
 import argparse
 
 # argparse setup
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                description='''\
+A python script playing musical notes
+
+how to use:
+    Notes are read from a file passed as argument, or directly from the
+    standard input. Each note must be on a new line.
+
+note format:
+    Each note must be formatted like so: 'A5#:1.5' (without quotes)
+    Where:
+        - 'A' is the note (between A and G, can be lowercase)
+        - '5' is the octave (between 0 and 8, default=4)
+        - '#' (or 'b') is optional and used to play a sharp or flat note.
+        - ':1.5' is the duration of the note (1.5 seconds here, default=0.5)
+''')
+parser.add_argument("file",
+                    nargs="?",
+                    help="a file containing music notes")
 parser.add_argument("--silent",
                     help="disable player output",
                     action='store_true')
 args = parser.parse_args()
+
+if args.file:
+    input_file = open(args.file, 'r')
+else:
+    input_file = sys.stdin
 
 VOLUME = 0.3
 DEFAULT_OCTAVE = 4
@@ -41,17 +64,13 @@ stream =  p.open(format=pyaudio.paFloat32,
                 rate=44100,
                 output=True)
 
-def print_note_error(substr: str, note: str):
-    error = str.encode("Error: invalid note format: '" + substr + "' in '" + note + "'" + os.linesep)
+def print_note_error(substr: str):
+    error = str.encode("Error: invalid note format: '" + substr + "' in '" + line + "'" + os.linesep)
     os.write(error_fd, error)
 
-def print_duration_error(duration: str, note: str):
-    error = str.encode("Error: invalid duration format: '" + duration + "' in '" + note + "'" + os.linesep)
+def print_duration_error(duration: str):
+    error = str.encode("Error: invalid duration format: '" + duration + "' in '" + line + "'" + os.linesep)
     os.write(error_fd, error)
-
-def try_help_message():
-    message = str.encode("Try '" + os.path.basename(__file__) + " --help'" + os.linesep)
-    os.write(error_fd, message)
 
 def print_played_note(note: str, duration: float):
     if not args.silent:
@@ -66,7 +85,7 @@ def set_semitone(freq: float, symbol: str, note: str):
     elif symbol == 'b':
         freq /= (2 ** (1. / 12.))
     else:
-        print_note_error(symbol, note)
+        print_note_error(symbol)
         freq = 0
     return freq
 
@@ -79,7 +98,7 @@ def set_octave(freq: float, octave: str, note: str):
             raise ValueError('octave value error')
         freq *= (2 ** octave_value)
     except:
-        print_note_error(octave, note)
+        print_note_error(octave)
         freq = 0
     return freq
 
@@ -88,7 +107,7 @@ def set_frequency(letter: str, note: str):
     try:
         freq = note_frequencies[upper_case_letter]
     except:
-        print_note_error(letter, note)
+        print_note_error(letter)
         freq = 0
     return freq
 
@@ -106,9 +125,9 @@ def compute_note(note: str):
         freq = set_octave(freq, note[1:2], note)
         freq = set_semitone(freq, note[2:3], note)
     else:
-        error = str.encode("Error: invalid format for the '" + note + "' note" + os.linesep)
-        os.write(error_fd, error)
-        try_help_message()
+        if freq != 0:
+            print_note_error(note)
+            freq = 0
     return freq
 
 def play_sound(stream: pyaudio.Stream, freq: float, duration: float):
@@ -122,24 +141,25 @@ def play_sound(stream: pyaudio.Stream, freq: float, duration: float):
     stream.write(frames.tostring())
 
 # player loop
-for line in sys.stdin:
+for line in input_file:
     line = line.rstrip()
     if len(line) > 0:
         try:
-            note, duration = line.split('-')
+            note, duration = line.split(':')
         except:
             note, duration = line, '.5'
         freq = compute_note(note)
         try:
             duration_value = float(duration)
         except:
-            print_duration_error(duration, note)
+            print_duration_error(duration)
             freq = 0
         if freq != 0:
             print_played_note(note, duration_value)
             play_sound(stream, freq, duration_value)
 
-print("Done")
+if not args.silent:
+    print("Done")
 
 # stop and close pyaudio
 time.sleep(0.1)
