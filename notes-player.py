@@ -3,31 +3,140 @@
 import os
 import sys
 import time
+import argparse
 import pyaudio
 import numpy as np
-import argparse
 
-VOLUME = 0.3
-DEFAULT_OCTAVE = 4
-RATE = 44100
+class NotesPlayer:
+    def __init__(self, volume: float = 0.3,
+                muteOutput: bool = False,
+                muteStderr: bool = True):
+        self.muteStderr = muteStderr
 
-# frequencies for the lowest octave
-note_frequencies =  {
-    'A': 27.50000,
-    'B': 30.86771,
-    'C': 16.35160,
-    'D': 18.35405,
-    'E': 20.60172,
-    'F': 21.82676,
-    'G': 24.49971
-}
+        # hide portaudio warnings by muting stderr
+        self.stderrFd = os.dup(2)
+        if self.muteStderr:
+            self.nullFd = os.open(os.devnull, os.O_RDWR)
+            os.dup2(self.nullFd, 2)
 
-# hide portaudio warnings by muting stderr
-glob_null_fd = os.open(os.devnull, os.O_RDWR)
-glob_error_fd = os.dup(2)
-os.dup2(glob_null_fd, 2)
+        # frequencies for the lowest octave
+        self.noteFrequencies =  {
+            'A': 27.50000,
+            'B': 30.86771,
+            'C': 16.35160,
+            'D': 18.35405,
+            'E': 20.60172,
+            'F': 21.82676,
+            'G': 24.49971
+        }
 
-def setup_argparse():
+        self.volume = volume
+        self.muteOutput = muteOutput
+        self.rate = 44100
+        self.freq = 0
+        self.validNote = True
+
+        # pyaudio stream initialization
+        self.pyaudio = pyaudio.PyAudio()
+        self.stream = self.pyaudio.open(format=pyaudio.paFloat32,
+                                    channels=1,
+                                    rate=self.rate,
+                                    output=True)
+
+    def __del__(self):
+        # stop and close pyaudio
+        time.sleep(0.1)
+        self.stream.stop_stream()
+        self.stream.close()
+        self.pyaudio.terminate()
+
+        # set stderr back to its value
+        if self.muteStderr:
+            os.dup2(self.stderrFd, 2)
+            os.close(self.nullFd)
+
+    def __setBaseFrequency(self, note: str):
+        letter = note[:1].upper()
+        try:
+            self.freq = self.noteFrequencies[letter]
+        except:
+            self.validNote = False
+            error = str.encode("Error: invalid note: '" + note[:1] + "'" + os.linesep)
+            os.write(self.stderrFd, error)
+
+    def __setOctave(self, octave: str = '4'):
+        if not self.validNote:
+            return
+        try:
+            octaveValue = int(octave)
+            if octaveValue < 0 or octaveValue > 8:
+                raise ValueError('octave value error')
+            self.freq *= (2 ** octaveValue)
+        except:
+            self.validNote = False
+            error = str.encode("Error: invalid octave: '" + octave + "'" + os.linesep)
+            os.write(self.stderrFd, error)
+
+    def __setSemitone(self, symbol: str):
+        if not self.validNote:
+            return
+        if symbol == '#':
+            self.freq *= (2 ** (1. / 12.))
+        elif symbol == 'b':
+            self.freq /= (2 ** (1. / 12.))
+        else:
+            self.validNote = False
+            error = str.encode("Error: invalid symbol: '" + symbol + "'" + os.linesep)
+            os.write(self.stderrFd, error)
+
+    def __calc_frequency(self, note: str):
+        self.__setBaseFrequency(note)
+        if len(note) == 1:
+            self.__setOctave()
+        elif len(note) == 2:
+            if note[1:2] == '#' or note[1:2] == 'b':
+                self.__setOctave()
+                self.__setSemitone(note[1:2])
+            else:
+                self.__setOctave(note[1:2])
+        elif len(note) == 3:
+            self.__setOctave(note[1:2])
+            self.__setSemitone(note[2:3])
+        else:
+            self.validNote = False
+            error = str.encode("Error: invalid note: '" + note + "'" + os.linesep)
+            os.write(self.stderrFd, error)
+
+    def __writeStream(self, duration: float):
+        frames = [np.sin(np.arange(int(duration * self.rate)) * (float(self.freq) * (np.pi * 2) / self.rate)).astype(np.float32)]
+        frames = np.concatenate(frames) * self.volume
+        fade = 1000
+        fade_in = np.arange(0., 1., 1/fade)
+        fade_out = np.arange(1., 0., -1/fade)
+        frames[:fade] = np.multiply(frames[:fade], fade_in)
+        frames[-fade:] = np.multiply(frames[-fade:], fade_out)
+        self.stream.write(frames.tostring())
+
+    def __printPlayedNote(self, note: str, duration: float):
+        if self.muteOutput or not self.validNote:
+            return
+        if note == 'pause':
+            print("Pausing for " + str(duration) + "s")
+        else:
+            print("Playing " + note + " (" + format(self.freq, '.2f') + " Hz) for " + str(duration) + "s")
+
+    def playNote(self, note: str, duration: float = 0.5):
+        self.validNote = True
+        if note == 'pause':
+            self.__printPlayedNote(note, duration)
+            time.sleep(duration)
+        else:
+            self.__calc_frequency(note)
+            if self.validNote:
+                self.__printPlayedNote(note, duration)
+                self.__writeStream(duration)
+
+def setupArgparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                     description='''\
     A python script playing musical notes
@@ -61,139 +170,32 @@ sleep:
         input_file = sys.stdin
     return args, input_file
 
-def print_note_error(substr: str, line: str):
-    error = str.encode("Error: invalid note format: '" + substr + "' in '" + line + "'" + os.linesep)
-    os.write(glob_error_fd, error)
+def main():
+    args, input_file = setupArgparse()
 
-def print_duration_error(duration: str, line: str):
-    error = str.encode("Error: invalid duration format: '" + duration + "' in '" + line + "'" + os.linesep)
-    os.write(glob_error_fd, error)
+    notesPlayer = NotesPlayer()
 
-def print_played_note(args, note: str, duration: float):
-    if not args.silent:
-        if note == 'sleep':
-            print("Sleeping (" + str(duration) + "s)")
-        else:
-            print("Playing " + note + " (" + str(duration) + "s)")
-
-
-def set_semitone(freq: float, symbol: str, note: str, line: str):
-    if freq == 0:
-        return freq
-    if symbol == '#':
-        freq *= (2 ** (1. / 12.))
-    elif symbol == 'b':
-        freq /= (2 ** (1. / 12.))
-    else:
-        print_note_error(symbol, line)
-        freq = 0
-    return freq
-
-def set_octave(freq: float, octave: str, note: str, line: str):
-    if freq == 0:
-        return freq
-    try:
-        octave_value = int(octave)
-        if octave_value < 0 or octave_value > 8:
-            raise ValueError('octave value error')
-        freq *= (2 ** octave_value)
-    except:
-        print_note_error(octave, line)
-        freq = 0
-    return freq
-
-def set_frequency(letter: str, note: str, line: str):
-    upper_case_letter = letter.upper()
-    try:
-        freq = note_frequencies[upper_case_letter]
-    except:
-        print_note_error(letter, line)
-        freq = 0
-    return freq
-
-def compute_note(note: str, line: str):
-    freq = set_frequency(note[:1], note, line)
-    if len(note) == 1:
-        freq = set_octave(freq, DEFAULT_OCTAVE, note, line)
-    elif len(note) == 2:
-        if note[1:2] == '#' or note[1:2] == 'b':
-            freq = set_octave(freq, DEFAULT_OCTAVE, note, line)
-            freq = set_semitone(freq, note[1:2], note, line)
-        else:
-            freq = set_octave(freq, note[1:2], note, line)
-    elif len(note) == 3:
-        freq = set_octave(freq, note[1:2], note, line)
-        freq = set_semitone(freq, note[2:3], note, line)
-    else:
-        if freq != 0:
-            print_note_error(note, line)
-            freq = 0
-    return freq
-
-def write_stream(stream: pyaudio.Stream, freq: float, duration: float):
-    frames = [np.sin(np.arange(int(duration * RATE)) * (float(freq) * (np.pi * 2) / RATE)).astype(np.float32)]
-    frames = np.concatenate(frames) * VOLUME
-    fade = 1000
-    fade_in = np.arange(0., 1., 1/fade)
-    fade_out = np.arange(1., 0., -1/fade)
-    frames[:fade] = np.multiply(frames[:fade], fade_in)
-    frames[-fade:] = np.multiply(frames[-fade:], fade_out)
-    stream.write(frames.tostring())
-
-def play_note(stream: pyaudio.Stream, note: str, freq: float, duration: float):
-    if note == 'sleep':
-        time.sleep(duration)
-    else:
-        write_stream(stream, freq, duration)
-
-def player_loop(args, input_file, stream: pyaudio.Stream):
-    freq = 440.0
     for line in input_file:
+        validDuration = True
         line = line.rstrip()
         if len(line) > 0:
             try:
-                note, duration = line.split(':')
+                note, durationStr = line.split(':')
             except:
-                note, duration = line, '.5'
-            if note != 'sleep':
-                freq = compute_note(note, line)
+                note, durationStr = line, '.5'
             try:
-                duration_value = float(duration)
+                duration = float(durationStr)
             except:
-                print_duration_error(duration, line)
-                freq = 0
-            if freq != 0:
-                print_played_note(args, note, duration_value)
-                play_note(stream, note, freq, duration_value)
+                validDuration = False
+                print('error')
+            if validDuration:
+                notesPlayer.playNote(note, duration)
+
     if not args.silent:
         print("Done")
-
-
-
-def main():
-    args, input_file = setup_argparse()
-
-    # portaudio stream initialization
-    p = pyaudio.PyAudio()
-    stream =  p.open(format=pyaudio.paFloat32,
-                channels=1,
-                rate=44100,
-                output=True)
-
-    player_loop(args, input_file, stream)
-
-    # stop and close pyaudio
-    time.sleep(0.1)
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
 
     if input_file is not sys.stdin:
         input_file.close
 
 if __name__ == "__main__":
     main()
-
-# set stderr back to its value
-os.dup2(glob_error_fd, 2)
-os.close(glob_null_fd)
