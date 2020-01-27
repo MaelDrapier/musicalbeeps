@@ -191,7 +191,7 @@ pause:
 
 
 def playerLoop(args, inputFile):
-    notesPlayer = NotesPlayer(args.volume)
+    notesPlayer = NotesPlayer(args.volume, args.silent)
 
     for line in inputFile:
         validDuration = True
