@@ -6,7 +6,7 @@ import time
 import pyaudio
 import numpy as np
 
-VOLUME = 0.4
+VOLUME = 0.3
 DEFAULT_OCTAVE = 4
 RATE = 44100
 
