@@ -3,7 +3,9 @@ A python module to play musical notes from the command line or from another pyth
 
 - [Installation](#installation)
 - [How to use](#how-to-use)
-    - [From command line](#from-command-line)
+    - [From the command line](#from-command-line)
+        - [Usage](#usage)
+        - [Examples](#examples)
     - [From a python program](#from-a-python-program)
     
 ## Installation
@@ -15,7 +17,8 @@ $ python setup.py install
 
 ## How to use:
 
-### From command line:
+### From the command line:
+
 #### Usage:
 `musicalnotes --help`
 ```
@@ -48,13 +51,21 @@ pause:
     For exemple, 'pause:5' will pause the player for 5 seconds.
 ```
 
+#### Examples:
+- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalnotes`
+
+- To play the content of a file: `musicalnotes file_to_play.txt`
+
+Example files are provided in the [**music_scores**](music_scores) directory of this repository.
+
+
 ### From a python program:
 ```python
 import musicalnotes
 
 
-notes_player = musicalnotes.Player()
+player = musicalnotes.Player()
 
 # Play the "A4#" note for 2.5 seconds
-notes_player("A4#", 2.5)
+player.play_note("A4#", 2.5)
 ```
