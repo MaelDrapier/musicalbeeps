@@ -60,7 +60,7 @@ Example files are provided in the [**music_scores**](music_scores) directory of 
 
 
 ### From a python program:
-```python
+```Python
 import musicalnotes
 
 
