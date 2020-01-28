@@ -5,7 +5,8 @@ import sys
 import argparse
 import MusicNotesPlayer as mnplayer
 
-def setupArgparse():
+
+def setup_argparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                     description='A python script playing musical notes',
                                     epilog='''\
@@ -43,35 +44,36 @@ pause:
         input_file = sys.stdin
     return args, input_file
 
+def player_loop(args, input_file):
+    notes_player = mnplayer.Player(args.volume, args.silent)
 
-def playerLoop(args, inputFile):
-    notesPlayer = mnplayer.Player(args.volume, args.silent)
-
-    for line in inputFile:
-        validDuration = True
+    for line in input_file:
+        valid_duration = True
         line = line.rstrip()
         if len(line) > 0:
             try:
-                note, durationStr = line.split(':')
+                note, duration_str = line.split(':')
             except:
-                note, durationStr = line, '.5'
+                note, duration_str = line, '.5'
             try:
-                duration = float(durationStr)
+                duration = float(duration_str)
             except:
-                validDuration = False
-                error = str.encode("Error: invalid duration: '" + durationStr + "'" + os.linesep)
-                os.write(notesPlayer.stderrFd, error)
-            if validDuration:
-                notesPlayer.playNote(note, duration)
-
+                valid_duration = False
+                error = str.encode("Error: invalid duration: '"
+                                    + duration_str
+                                    + "'"
+                                    + os.linesep)
+                os.write(notes_player.stderr_fd, error)
+            if valid_duration:
+                notes_player.play_note(note, duration)
 
 def main():
-    args, inputFile = setupArgparse()
-    playerLoop(args, inputFile)
+    args, input_file = setup_argparse()
+    player_loop(args, input_file)
     if not args.silent:
         print("Done")
-    if inputFile is not sys.stdin:
-        inputFile.close
+    if input_file is not sys.stdin:
+        input_file.close
 
 
 if __name__ == "__main__":
