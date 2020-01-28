@@ -81,7 +81,7 @@ player.play_note("F5#")
 player.play_note("pause", 3.5)
 ```
 
-#### Attributes for the `Player` class:
+#### Initializations parameters for the `Player` class:
 
 |Name|Type|Default|Description|
 |:---:|:---:|:---:|:---|
