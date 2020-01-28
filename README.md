@@ -60,21 +60,31 @@ Example files are provided in the [**music_scores**](music_scores) directory of 
 
 
 ### From a python program:
-```python
+```Python
 import musicalnotes
 
 
-player = musicalnotes.Player()
+player = musicalnotes.Player(volume=0.3, mute_output = False, hide_warnings = True)
+
+# Examples:
 
 # To play an A on default octave n°4 for 0.2 seconds
 player.play_note("A", 0.2)
 
-# To play a flat G on octave n°3 for 2.5 seconds
+# To play a G flat on octave n°3 for 2.5 seconds
 player.play_note("G3b", 2.5)
 
-# To play a sharp F on octave n°5 for the default duration of 0.5 seconds
+# To play a F sharp on octave n°5 for the default duration of 0.5 seconds
 player.play_note("F5#")
 
 # To pause the player for 3.5 seconds
 player.play_note("pause", 3.5)
 ```
+
+#### Attributes for the `Player` class:
+
+|Name|Type|Default|Description|
+|:---:|:---:|:---:|:---|
+|`volume`|`float`|`0.5`|Set the volume. Must be between `0` and `1`|
+|`mute_output`|`bool`|`False`|Mute the output displayed when a note is played|
+|`hide_warnings`|`bool`|`True`|Hide warnings triggered by PortAudio by muting stderr when a note is played|
