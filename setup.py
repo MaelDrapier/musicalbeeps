@@ -1,9 +1,16 @@
+import pathlib
 from setuptools import setup, find_packages
+
+HERE = pathlib.Path(__file__).parent
+
+README = (HERE / "README.md").read_text()
 
 setup(
     name="musicalnotes",
     version="0.1.0",
     description="Play musical notes from command line or from your program",
+    long_description=README,
+    long_description_content_type="text/markdown",
     url="https://github.com/MaelDrapier/MusicalNotes",
     author="Maël Drapier",
     author_email="mael.drapier@gmail.com",
