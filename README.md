@@ -3,7 +3,7 @@ A python module to play musical notes from the command line or from another pyth
 
 - [Installation](#installation)
 - [How to use](#how-to-use)
-    - [From the command line](#from-command-line)
+    - [From the command line](#from-the-command-line)
         - [Usage](#usage)
         - [Examples](#examples)
     - [From a python program](#from-a-python-program)
