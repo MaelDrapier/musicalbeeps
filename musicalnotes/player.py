@@ -9,7 +9,7 @@ import numpy as np
 class Player:
     def __init__(self, volume: float = 0.5,
                 mute_output: bool = False,
-                mute_stderr: bool = True):
+                mute_stderr: bool = False):
         self.mute_stderr = False
 
         if volume < 0 or volume > 1:

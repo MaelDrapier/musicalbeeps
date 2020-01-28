@@ -45,7 +45,7 @@ pause:
     return args, input_file
 
 def player_loop(args, input_file):
-    notes_player = musicalnotes.Player(args.volume, args.silent)
+    notes_player = musicalnotes.Player(args.volume, args.silent, True)
 
     for line in input_file:
         valid_duration = True
