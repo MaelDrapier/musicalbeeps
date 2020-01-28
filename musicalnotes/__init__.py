@@ -1,0 +1,4 @@
+from .player import *
+
+
+__version__ = "1.0.0"

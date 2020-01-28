@@ -3,12 +3,12 @@
 import os
 import sys
 import argparse
-import MusicNotesPlayer as mnplayer
+import musicalnotes.player as musicalnotes
 
 
 def setup_argparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                    description='A python script playing musical notes',
+                                    description='A Python script to play musical notes',
                                     epilog='''\
 
 how to use:
@@ -45,7 +45,7 @@ pause:
     return args, input_file
 
 def player_loop(args, input_file):
-    notes_player = mnplayer.Player(args.volume, args.silent)
+    notes_player = musicalnotes.Player(args.volume, args.silent)
 
     for line in input_file:
         valid_duration = True
