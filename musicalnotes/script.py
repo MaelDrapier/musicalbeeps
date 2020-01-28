@@ -3,7 +3,7 @@
 import os
 import sys
 import argparse
-import musicalnotes.player as musicalnotes
+import musicalnotes.notesplayer as musicalnotes
 
 
 def setup_argparse():
@@ -45,7 +45,7 @@ pause:
     return args, input_file
 
 def player_loop(args, input_file):
-    notes_player = musicalnotes.Player(args.volume, args.silent, True)
+    notes_player = musicalnotes.Player(args.volume, args.silent)
 
     for line in input_file:
         valid_duration = True
@@ -59,11 +59,10 @@ def player_loop(args, input_file):
                 duration = float(duration_str)
             except:
                 valid_duration = False
-                error = str.encode("Error: invalid duration: '"
-                                    + duration_str
-                                    + "'"
-                                    + os.linesep)
-                os.write(notes_player.stderr_fd, error)
+                print("Error: invalid duration: '"
+                                        + duration_str
+                                        + "'",
+                                        file=sys.stderr)
             if valid_duration:
                 notes_player.play_note(note, duration)
 

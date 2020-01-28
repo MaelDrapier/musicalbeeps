@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import time
 import pyaudio
 import numpy as np
@@ -9,18 +10,11 @@ import numpy as np
 class Player:
     def __init__(self, volume: float = 0.5,
                 mute_output: bool = False,
-                mute_stderr: bool = False):
-        self.mute_stderr = False
+                hide_warnings: bool = True):
+
 
         if volume < 0 or volume > 1:
             raise ValueError("Volume must be a float between 0 and 1")
-
-        # Hide portaudio warnings by muting stderr
-        self.mute_stderr = mute_stderr
-        self.stderr_fd = os.dup(2)
-        if self.mute_stderr:
-            self.null_fd = os.open(os.devnull, os.O_RDWR)
-            os.dup2(self.null_fd, 2)
 
         # Frequencies for the lowest octave
         self.note_frequencies =  {
@@ -37,29 +31,45 @@ class Player:
         self.mute_output = mute_output
         self.rate = 44100
         self.freq = 0
-        self.valid_note = True
+        self._valid_note = True
+        self._hide_warnings = hide_warnings
+
+        # Hide warnings triggered by PortAudio by muting stderr
+        if self._hide_warnings:
+            self._stderr_fd = os.dup(2)
+            self._null_fd = os.open(os.devnull, os.O_RDWR)
+            self.__mute_stderr()
 
         # PyAudio stream initialization
-        self.pyaudio = pyaudio.PyAudio()
-        self.stream = self.pyaudio.open(format=pyaudio.paFloat32,
+        self._pyaudio = pyaudio.PyAudio()
+        self._stream = self._pyaudio.open(format=pyaudio.paFloat32,
                                         channels=1,
                                         rate=self.rate,
                                         output=True)
+
+        # Set stderr back to its original value
+        if self._hide_warnings:
+            self.__unmute_stderr()
+
+    def __mute_stderr(self):
+        os.dup2(self._null_fd, 2)
+
+    def __unmute_stderr(self):
+        os.dup2(self._stderr_fd, 2)
 
     def __set_base_frequency(self, note: str):
         letter = note[:1].upper()
         try:
             self.freq = self.note_frequencies[letter]
         except:
-            self.valid_note = False
-            error = str.encode("Error: invalid note: '"
-                                + note[:1]
-                                + "'"
-                                + os.linesep)
-            os.write(self.stderr_fd, error)
+            self._valid_note = False
+            print("Error: invalid note: '"
+                                    + note[:1]
+                                    + "'",
+                                    file=sys.stderr)
 
     def __set_octave(self, octave: str = '4'):
-        if not self.valid_note:
+        if not self._valid_note:
             return
         try:
             octaveValue = int(octave)
@@ -67,27 +77,25 @@ class Player:
                 raise ValueError('octave value error')
             self.freq *= (2 ** octaveValue)
         except:
-            self.valid_note = False
-            error = str.encode("Error: invalid octave: '"
-                                + octave
-                                + "'"
-                                + os.linesep)
-            os.write(self.stderr_fd, error)
+            self._valid_note = False
+            print("Error: invalid octave: '"
+                                    + octave
+                                    + "'",
+                                    file=sys.stderr)
 
     def __set_semitone(self, symbol: str):
-        if not self.valid_note:
+        if not self._valid_note:
             return
         if symbol == '#':
             self.freq *= (2 ** (1. / 12.))
         elif symbol == 'b':
             self.freq /= (2 ** (1. / 12.))
         else:
-            self.valid_note = False
-            error = str.encode("Error: invalid symbol: '"
-                                + symbol
-                                + "'"
-                                + os.linesep)
-            os.write(self.stderr_fd, error)
+            self._valid_note = False
+            print("Error: invalid symbol: '"
+                                    + symbol
+                                    + "'",
+                                    file=sys.stderr)
 
     def __calc_frequency(self, note: str):
         self.__set_base_frequency(note)
@@ -103,13 +111,12 @@ class Player:
             self.__set_octave(note[1:2])
             self.__set_semitone(note[2:3])
         else:
-            if self.valid_note:
-                error = str.encode("Errror: invalid note: '"
-                                    + note
-                                    + "'"
-                                    + os.linesep)
-                os.write(self.stderr_fd, error)
-                self.valid_note = False
+            if self._valid_note:
+                print("Errror: invalid note: '"
+                                        + note
+                                        + "'",
+                                        file=sys.stderr)
+                self._valid_note = False
 
     def __write_stream(self, duration: float):
         frames = [np.sin(np.arange(int(duration * self.rate))
@@ -121,10 +128,17 @@ class Player:
         fade_out = np.arange(1., 0., -1/fade)
         frames[:fade] = np.multiply(frames[:fade], fade_in)
         frames[-fade:] = np.multiply(frames[-fade:], fade_out)
-        self.stream.write(frames.tostring())
+
+        if self._hide_warnings:
+            self.__mute_stderr()
+
+        self._stream.write(frames.tostring())
+
+        if self._hide_warnings:
+            self.__unmute_stderr()
 
     def __print_played_note(self, note: str, duration: float):
-        if self.mute_output or not self.valid_note:
+        if self.mute_output or not self._valid_note:
             return
         if note == 'pause':
             print("Pausing for " + str(duration) + "s")
@@ -132,26 +146,23 @@ class Player:
             print("Playing " + note + " (" + format(self.freq, '.2f') + " Hz) for " + str(duration) + "s")
 
     def play_note(self, note: str, duration: float = 0.5):
-            self.valid_note = True
-            if note == 'pause':
+        self._valid_note = True
+        if note == 'pause':
+            self.__print_played_note(note, duration)
+            time.sleep(duration)
+        else:
+            self.__calc_frequency(note)
+            if self._valid_note:
                 self.__print_played_note(note, duration)
-                time.sleep(duration)
-            else:
-                self.__calc_frequency(note)
-                if self.valid_note:
-                    self.__print_played_note(note, duration)
-                    self.__write_stream(duration)
-
+                self.__write_stream(duration)
 
     def __del__(self):
         # Stop and close pyaudio
-        if hasattr(self, 'pyaudio') and hasattr(self, 'stream'):
+        if hasattr(self, '_pyaudio') and hasattr(self, '_stream'):
             time.sleep(0.1)
-            self.stream.stop_stream()
-            self.stream.close()
-            self.pyaudio.terminate()
+            self._stream.stop_stream()
+            self._stream.close()
+            self._pyaudio.terminate()
 
-        # Set stderr back to its value
-        if self.mute_stderr:
-            os.dup2(self.stderr_fd, 2)
-            os.close(self.null_fd)
+        if hasattr(self, '_hide_warnings') and self._hide_warnings:
+            os.close(self._null_fd)
