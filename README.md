@@ -64,7 +64,7 @@ Example files are provided in the [**music_scores**](music_scores) directory of 
 import musicalnotes
 
 
-player = musicalnotes.Player()
+player = musicalnotes.Player(volume=0.3, mute_output = False, hide_warnings = True)
 
 # To play an A on default octave n°4 for 0.2 seconds
 player.play_note("A", 0.2)
