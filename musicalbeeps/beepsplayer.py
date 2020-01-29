@@ -11,7 +11,6 @@ class Player:
     def __init__(self, volume: float = 0.5,
                 mute_output: bool = False):
 
-
         if volume < 0 or volume > 1:
             raise ValueError("Volume must be a float between 0 and 1")
 
