@@ -1,5 +1,5 @@
 # MusicalNotes
-A python module to play musical notes from the command line or from another python program.
+A python module to play beep sounds corresponding to musical notes from the command line or from another python program.
 
 - [Installation](#installation)
 - [How to use](#how-to-use)
