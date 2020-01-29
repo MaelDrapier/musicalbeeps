@@ -1,13 +1,12 @@
 A python module to play sound beeps corresponding to musical notes from the command line or another python program.
 
-# How to use:
+# How to use it from another python program:
 
-## From a python program:
 ```Python
-import musicalnotes
+import musicalbeeps
 
 
-player = musicalnotes.Player(volume = 0.3,
+player = musicalbeeps.Player(volume = 0.3,
                             mute_output = False,
                             hide_warnings = True)
 
@@ -34,17 +33,16 @@ player.play_note("pause", 3.5)
 |`mute_output`|`bool`|`False`|Mute the output displayed when a note is played|
 |`hide_warnings`|`bool`|`True`|Hide warnings triggered by PortAudio by muting stderr when a note is played|
 
-## From the command line:
+# How to use it from the command line:
 
-### Usage:
-`musicalnotes --help`
+`musicalbeeps --help`
 ```
-usage: musicalnotes [-h] [--silent] [--volume VOLUME] [file]
+usage: musicalbeeps [-h] [--silent] [--volume VOLUME] [file]
 
-A Python script to play musical notes
+Play sound beeps corresponding to musical notes.
 
 positional arguments:
-  file             a file containing music notes
+  file             a file containing musical notes
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -69,8 +67,8 @@ pause:
 ```
 
 ### Examples:
-- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalnotes`
+- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalbeeps`
 
-- To play the content of a file: `musicalnotes file_to_play.txt`
+- To play the content of a file: `musicalbeeps file_to_play.txt`
 
-Example files are provided in the [**music_scores**](https://github.com/MaelDrapier/MusicalNotes/tree/master/music_scores) directory of the [GitHub repository](https://github.com/MaelDrapier/MusicalNotes).
+Example files are provided in the [**music_scores**](https://github.com/MaelDrapier/MusicalBeeps/tree/master/music_scores) directory of the [GitHub repository](https://github.com/MaelDrapier/MusicalBeeps).

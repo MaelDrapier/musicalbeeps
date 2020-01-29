@@ -3,12 +3,12 @@
 import os
 import sys
 import argparse
-import musicalnotes.notesplayer as musicalnotes
+import musicalbeeps
 
 
 def setup_argparse():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                    description='A Python script to play musical notes',
+                                    description='Play sound beeps corresponding to musical notes.',
                                     epilog='''\
 
 how to use:
@@ -25,11 +25,10 @@ note format:
 
 pause:
     You can pause the player by replacing the note by the 'pause' word.
-    For exemple, 'pause:5' will pause the player for 5 seconds.
-    ''')
+    For exemple, 'pause:5' will pause the player for 5 seconds.''')
     parser.add_argument("file",
                         nargs="?",
-                        help="a file containing music notes")
+                        help="a file containing musical notes")
     parser.add_argument("--silent",
                         help="disable player output",
                         action='store_true')
@@ -45,7 +44,7 @@ pause:
     return args, input_file
 
 def player_loop(args, input_file):
-    notes_player = musicalnotes.Player(args.volume, args.silent)
+    notes_player = musicalbeeps.Player(args.volume, args.silent)
 
     for line in input_file:
         valid_duration = True

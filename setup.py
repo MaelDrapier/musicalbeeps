@@ -6,15 +6,15 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "PYPI_README.md").read_text()
 
 setup(
-    name="MusicalNotes",
-    version="0.1.1",
+    name="MusicalBeeps",
+    version="0.1.0",
     description="Play sound beeps corresponding to musical notes.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/MaelDrapier/MusicalNotes",
+    url="https://github.com/MaelDrapier/MusicalBeeps",
     author="Maël Drapier",
     author_email="mael.drapier@gmail.com",
-    keywords="music musical note notes play player sound frequency",
+    keywords="music musical note notes beep beeps play player sound frequency",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -27,7 +27,7 @@ setup(
     install_requires=["pyaudio", "numpy"],
     entry_points={
         "console_scripts": [
-            "musicalnotes=musicalnotes.script:main",
+            "musicalbeeps=musicalbeeps.script:main",
         ]
     },
 )

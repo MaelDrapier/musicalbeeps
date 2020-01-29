@@ -1,4 +1,4 @@
-# MusicalNotes
+# MusicalBeeps
 
 A python module to play sound beeps corresponding to musical notes from the command line or another python program.
 
@@ -13,15 +13,15 @@ A python module to play sound beeps corresponding to musical notes from the comm
 
 ## Installation
 
-### From the [Python Package Index](https://pypi.org/project/MusicalNotes/)
+### From the [Python Package Index](https://pypi.org/project/MusicalBeeps/)
 
-`pip install musicalnotes`
+`pip install musicalbeeps`
 
 ### From source
 
 ```
-$ git clone https://github.com/MaelDrapier/MusicalNotes
-$ cd MusicalNotes
+$ git clone https://github.com/MaelDrapier/MusicalBeeps
+$ cd MusicalBeeps
 $ python setup.py install
 ```
 
@@ -30,14 +30,14 @@ $ python setup.py install
 ### From the command line:
 
 #### Usage:
-`musicalnotes --help`
+`musicalbeeps --help`
 ```
-usage: musicalnotes [-h] [--silent] [--volume VOLUME] [file]
+usage: musicalbeeps [-h] [--silent] [--volume VOLUME] [file]
 
-A Python script to play musical notes
+Play sound beeps corresponding to musical notes.
 
 positional arguments:
-  file             a file containing music notes
+  file             a file containing musical notes
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -62,19 +62,19 @@ pause:
 ```
 
 #### Examples:
-- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalnotes`
+- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalbeeps`
 
-- To play the content of a file: `musicalnotes file_to_play.txt`
+- To play the content of a file: `musicalbeeps file_to_play.txt`
 
 Example files are provided in the [**music_scores**](music_scores) directory of this repository.
 
 
 ### From a python program:
 ```Python
-import musicalnotes
+import musicalbeeps
 
 
-player = musicalnotes.Player(volume = 0.3,
+player = musicalbeeps.Player(volume = 0.3,
                             mute_output = False,
                             hide_warnings = True)
 
