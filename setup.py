@@ -14,6 +14,7 @@ setup(
     url="https://github.com/MaelDrapier/MusicalBeeps",
     author="Maël Drapier",
     author_email="mael.drapier@gmail.com",
+    license="MIT",
     keywords="music musical note notes beep beeps play player sound frequency",
     classifiers=[
         "Programming Language :: Python :: 3",
