@@ -1,4 +1,6 @@
-A python module to play sound beeps corresponding to musical notes from the command line or another python program.
+A python package to play sound beeps corresponding to musical notes from the command line or another python program.
+
+This package uses the [numpy](https://pypi.org/project/numpy/) and [simplaudio](https://pypi.org/project/simpleaudio/) packages.
 
 # How to use it from another python program:
 
