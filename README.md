@@ -56,7 +56,7 @@ pause:
 
 - To play the content of a file: `musicalnotes file_to_play.txt`
 
-Example files are provided in the [**music_scores**](music_scores) directory of this repository.
+Example files are provided in the [**music_scores**](https://github.com/MaelDrapier/MusicalNotes/tree/master/music_scores) directory of the GitHub repository.
 
 
 ### From a python program:
