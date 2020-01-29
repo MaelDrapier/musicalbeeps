@@ -1,7 +1,10 @@
 # MusicalNotes
+
 A python module to play sound beeps corresponding to musical notes from the command line or another python program.
 
 - [Installation](#installation)
+   - [From the Python Package Index](#from-the-python-package-index)
+   - [From source](#from-source)
 - [How to use](#how-to-use)
     - [From the command line](#from-the-command-line)
         - [Usage](#usage)
@@ -9,6 +12,13 @@ A python module to play sound beeps corresponding to musical notes from the comm
     - [From a python program](#from-a-python-program)
     
 ## Installation
+
+### From the [Python Package Index](https://pypi.org)
+
+`pip install musicalnotes`
+
+### From source
+
 ```
 $ git clone https://github.com/MaelDrapier/MusicalNotes
 $ cd MusicalNotes
