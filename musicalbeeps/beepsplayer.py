@@ -9,8 +9,7 @@ import simpleaudio as sa
 
 class Player:
     def __init__(self, volume: float = 0.5,
-                mute_output: bool = False,
-                hide_warnings: bool = True):
+                mute_output: bool = False):
 
 
         if volume < 0 or volume > 1:

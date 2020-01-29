@@ -7,8 +7,7 @@ import musicalbeeps
 
 
 player = musicalbeeps.Player(volume = 0.3,
-                            mute_output = False,
-                            hide_warnings = True)
+                            mute_output = False)
 
 # Examples:
 
@@ -31,7 +30,6 @@ player.play_note("pause", 3.5)
 |:---:|:---:|:---:|:---|
 |`volume`|`float`|`0.5`|Set the volume. Must be between `0` and `1`|
 |`mute_output`|`bool`|`False`|Mute the output displayed when a note is played|
-|`hide_warnings`|`bool`|`True`|Hide warnings triggered by PortAudio by muting stderr when a note is played|
 
 # How to use it from the command line:
 
