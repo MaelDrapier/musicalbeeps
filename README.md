@@ -1,4 +1,4 @@
-# MusicalBeeps
+# MusicalBeeps v0.2.1
 
 A python module to play sound beeps corresponding to musical notes from the command line or another python program.
 
