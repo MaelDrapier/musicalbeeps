@@ -3,8 +3,8 @@
 import os
 import sys
 import time
-import pyaudio
 import numpy as np
+import simpleaudio as sa
 
 
 class Player:
@@ -31,31 +31,11 @@ class Player:
         self.mute_output = mute_output
         self.rate = 44100
         self.freq = 0
+        self.fade = 800
         self._valid_note = True
-        self._hide_warnings = hide_warnings
-
-        # Hide warnings triggered by PortAudio by muting stderr
-        if self._hide_warnings:
-            self._stderr_fd = os.dup(2)
-            self._null_fd = os.open(os.devnull, os.O_RDWR)
-            self.__mute_stderr()
-
-        # PyAudio stream initialization
-        self._pyaudio = pyaudio.PyAudio()
-        self._stream = self._pyaudio.open(format=pyaudio.paFloat32,
-                                        channels=1,
-                                        rate=self.rate,
-                                        output=True)
-
-        # Set stderr back to its original value
-        if self._hide_warnings:
-            self.__unmute_stderr()
-
-    def __mute_stderr(self):
-        os.dup2(self._null_fd, 2)
-
-    def __unmute_stderr(self):
-        os.dup2(self._stderr_fd, 2)
+        self._fade_in = np.arange(0., 1., 1 / self.fade)
+        self._fade_out = np.arange(1., 0., -1 / self.fade)
+        self._play_obj = None
 
     def __set_base_frequency(self, note: str):
         letter = note[:1].upper()
@@ -118,24 +98,25 @@ class Player:
                                         file=sys.stderr)
                 self._valid_note = False
 
+    def __wait_for_prev_sound(self):
+        if self._play_obj is not None:
+            while self._play_obj.is_playing(): pass
+
+
     def __write_stream(self, duration: float):
-        frames = [np.sin(np.arange(int(duration * self.rate))
-            * (float(self.freq)
-            * (np.pi * 2) / self.rate)).astype(np.float32)]
-        frames = np.concatenate(frames) * self.volume
-        fade = 1000
-        fade_in = np.arange(0., 1., 1/fade)
-        fade_out = np.arange(1., 0., -1/fade)
-        frames[:fade] = np.multiply(frames[:fade], fade_in)
-        frames[-fade:] = np.multiply(frames[-fade:], fade_out)
+        t = np.linspace(0, duration, int(duration * self.rate), False)
+        audio = np.sin(self.freq * t * 2 * np.pi)
+        audio *= 32767 / np.max(np.abs(audio))
+        audio *= self.volume
 
-        if self._hide_warnings:
-            self.__mute_stderr()
+        if len(audio) > self.fade:
+            audio[:self.fade] *= self._fade_in
+            audio[-self.fade:] *= self._fade_out
 
-        self._stream.write(frames.tostring())
+        audio = audio.astype(np.int16)
 
-        if self._hide_warnings:
-            self.__unmute_stderr()
+        self.__wait_for_prev_sound()
+        self._play_obj = sa.play_buffer(audio, 1, 2, self.rate)
 
     def __print_played_note(self, note: str, duration: float):
         if self.mute_output or not self._valid_note:
@@ -148,21 +129,14 @@ class Player:
     def play_note(self, note: str, duration: float = 0.5):
         self._valid_note = True
         if note == 'pause':
+            self.__wait_for_prev_sound()
             self.__print_played_note(note, duration)
             time.sleep(duration)
         else:
             self.__calc_frequency(note)
             if self._valid_note:
-                self.__print_played_note(note, duration)
                 self.__write_stream(duration)
+                self.__print_played_note(note, duration)
 
     def __del__(self):
-        # Stop and close pyaudio
-        if hasattr(self, '_pyaudio') and hasattr(self, '_stream'):
-            time.sleep(0.1)
-            self._stream.stop_stream()
-            self._stream.close()
-            self._pyaudio.terminate()
-
-        if hasattr(self, '_hide_warnings') and self._hide_warnings:
-            os.close(self._null_fd)
+        self.__wait_for_prev_sound()

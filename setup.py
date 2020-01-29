@@ -24,7 +24,7 @@ setup(
         "Topic :: Multimedia :: Sound/Audio :: Players"
     ],
     packages=find_packages(),
-    install_requires=["pyaudio", "numpy"],
+    install_requires=["numpy", "simpleaudio"],
     entry_points={
         "console_scripts": [
             "musicalbeeps=musicalbeeps.script:main",

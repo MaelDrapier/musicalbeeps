@@ -66,13 +66,15 @@ def player_loop(args, input_file):
                 notes_player.play_note(note, duration)
 
 def main():
-    args, input_file = setup_argparse()
-    player_loop(args, input_file)
-    if not args.silent:
-        print("Done")
-    if input_file is not sys.stdin:
-        input_file.close
-
+    try:
+        args, input_file = setup_argparse()
+        player_loop(args, input_file)
+        if not args.silent:
+            print("Done")
+        if input_file is not sys.stdin:
+            input_file.close
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == "__main__":
     main()
