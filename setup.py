@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-README = (HERE / "README.md").read_text()
+README = (HERE / "PYPI_README.md").read_text()
 
 setup(
     name="MusicalNotes",
-    version="0.1.0",
+    version="0.1.1",
     description="Play sound beeps corresponding to musical notes.",
     long_description=README,
     long_description_content_type="text/markdown",

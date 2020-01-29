@@ -10,10 +10,10 @@ A python module to play sound beeps corresponding to musical notes from the comm
         - [Usage](#usage)
         - [Examples](#examples)
     - [From a python program](#from-a-python-program)
-    
+
 ## Installation
 
-### From the [Python Package Index](https://pypi.org)
+### From the [Python Package Index](https://pypi.org/project/MusicalNotes/)
 
 `pip install musicalnotes`
 
@@ -66,7 +66,7 @@ pause:
 
 - To play the content of a file: `musicalnotes file_to_play.txt`
 
-Example files are provided in the [**music_scores**](https://github.com/MaelDrapier/MusicalNotes/tree/master/music_scores) directory of the GitHub repository.
+Example files are provided in the [**music_scores**](music_scores) directory of this repository.
 
 
 ### From a python program:
@@ -74,7 +74,9 @@ Example files are provided in the [**music_scores**](https://github.com/MaelDrap
 import musicalnotes
 
 
-player = musicalnotes.Player(volume=0.3, mute_output = False, hide_warnings = True)
+player = musicalnotes.Player(volume = 0.3,
+                            mute_output = False,
+                            hide_warnings = True)
 
 # Examples:
 
