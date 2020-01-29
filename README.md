@@ -96,5 +96,5 @@ player.play_note("pause", 3.5)
 
 |Name|Type|Default|Description|
 |:---:|:---:|:---:|:---|
-|`volume`|`float`|`0.5`|Set the volume. Must be between `0` and `1`|
+|`volume`|`float`|`0.3`|Set the volume. Must be between `0` and `1`|
 |`mute_output`|`bool`|`False`|Mute the output displayed when a note is played|
