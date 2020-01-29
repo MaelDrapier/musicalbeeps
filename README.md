@@ -7,9 +7,8 @@ This package uses the [numpy](https://pypi.org/project/numpy/) and [simplaudio](
 - [Installation](#installation)
    - [From the Python Package Index](#from-the-python-package-index)
    - [From source](#from-source)
-- [How to use](#how-to-use)
+- [Usage](#usage)
     - [From the command line](#from-the-command-line)
-        - [Usage](#usage)
         - [Examples](#examples)
     - [From a python program](#from-a-python-program)
 
@@ -27,11 +26,10 @@ $ cd MusicalBeeps
 $ python setup.py install
 ```
 
-## How to use:
+## Usage:
 
 ### From the command line:
 
-#### Usage:
 `musicalbeeps --help`
 ```
 usage: musicalbeeps [-h] [--silent] [--volume VOLUME] [file]
