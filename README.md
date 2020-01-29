@@ -44,7 +44,7 @@ optional arguments:
   --silent         disable player output
   --volume VOLUME  volume between 0 and 1 (default=0.5)
 
-how to use:
+how to play notes:
     Notes are read from a file passed as argument, or directly from the
     standard input. Each note must be on a new line.
 

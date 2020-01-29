@@ -11,7 +11,7 @@ def setup_argparse():
                                     description='Play sound beeps corresponding to musical notes.',
                                     epilog='''\
 
-how to use:
+how to play notes:
     Notes are read from a file passed as argument, or directly from the
     standard input. Each note must be on a new line.
 
