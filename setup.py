@@ -8,7 +8,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="musicalnotes",
     version="0.1.0",
-    description="Play musical notes from command line or from your program",
+    description="Play sound beeps corresponding to musical notes.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/MaelDrapier/MusicalNotes",
