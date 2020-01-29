@@ -6,7 +6,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(
-    name="musicalnotes",
+    name="MusicalNotes",
     version="0.1.0",
     description="Play sound beeps corresponding to musical notes.",
     long_description=README,
