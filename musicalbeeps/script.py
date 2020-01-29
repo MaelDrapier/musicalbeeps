@@ -75,6 +75,8 @@ def main():
             input_file.close
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        print(e, file=sys.stderr)
 
 if __name__ == "__main__":
     main()
