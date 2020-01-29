@@ -33,9 +33,9 @@ pause:
                         help="disable player output",
                         action='store_true')
     parser.add_argument("--volume",
-                        help="volume between 0 and 1 (default=0.5)",
+                        help="volume between 0 and 1 (default=0.3)",
                         type=float,
-                        default=0.5)
+                        default=0.3)
     args = parser.parse_args()
     if args.file:
         input_file = open(args.file, 'r')

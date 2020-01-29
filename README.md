@@ -42,7 +42,7 @@ positional arguments:
 optional arguments:
   -h, --help       show this help message and exit
   --silent         disable player output
-  --volume VOLUME  volume between 0 and 1 (default=0.5)
+  --volume VOLUME  volume between 0 and 1 (default=0.3)
 
 how to play notes:
     Notes are read from a file passed as argument, or directly from the
