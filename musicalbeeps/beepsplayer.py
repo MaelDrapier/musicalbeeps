@@ -34,6 +34,7 @@ class Player:
         self._fade_in = np.arange(0., 1., 1 / self.fade)
         self._fade_out = np.arange(1., 0., -1 / self.fade)
         self._play_obj = None
+        self._destructor_sleep = 0
 
     def __set_base_frequency(self, note: str):
         letter = note[:1].upper()
@@ -130,11 +131,13 @@ class Player:
             self.__wait_for_prev_sound()
             self.__print_played_note(note, duration)
             time.sleep(duration)
+            self._destructor_sleep = 0
         else:
             self.__calc_frequency(note)
             if self._valid_note:
                 self.__write_stream(duration)
                 self.__print_played_note(note, duration)
+                self._destructor_sleep = duration
 
     def __del__(self):
-        self.__wait_for_prev_sound()
+        time.sleep(self._destructor_sleep)
