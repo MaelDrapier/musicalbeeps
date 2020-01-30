@@ -7,7 +7,7 @@ README = (HERE / "PYPI_README.md").read_text()
 
 setup(
     name="MusicalBeeps",
-    version="0.2.5",
+    version="0.2.6",
     description="Play sound beeps corresponding to musical notes.",
     long_description=README,
     long_description_content_type="text/markdown",
