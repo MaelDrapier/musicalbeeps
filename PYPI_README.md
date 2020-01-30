@@ -1,3 +1,7 @@
+[![GitHub](https://img.shields.io/github/license/MaelDrapier/MusicalBeeps)](https://github.com/MaelDrapier/MusicalBeeps/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/MusicalBeeps?color=blue)](https://pypi.org/project/MusicalBeeps/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/MusicalBeeps)
+
 A python package to play sound beeps corresponding to musical notes from the command line or another python program.
 
 This package uses the [numpy](https://pypi.org/project/numpy/) and [simplaudio](https://pypi.org/project/simpleaudio/) packages.
