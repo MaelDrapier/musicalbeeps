@@ -71,7 +71,7 @@ pause:
 ```
 
 ### Examples:
-- To play a sharp B on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalbeeps`
+- To play a B sharp on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalbeeps`
 
 - To play the content of a file: `musicalbeeps file_to_play.txt`
 
