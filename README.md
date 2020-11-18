@@ -2,6 +2,7 @@
 [![GitHub](https://img.shields.io/github/license/MaelDrapier/MusicalBeeps)](https://github.com/MaelDrapier/MusicalBeeps/blob/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/MusicalBeeps?color=blue)](https://pypi.org/project/MusicalBeeps/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/MusicalBeeps)](https://pypi.org/project/MusicalBeeps/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/MusicalBeeps?color=default)](https://pypi.org/project/MusicalBeeps/)
 
 A python package to play sound beeps corresponding to musical notes from the command line or another python program.
 
@@ -29,9 +30,9 @@ $ cd MusicalBeeps
 $ python setup.py install
 ```
 
-## Usage:
+## Usage
 
-### From the command line:
+### From the command line
 
 `musicalbeeps --help`
 ```
@@ -64,7 +65,7 @@ pause:
     For exemple, 'pause:5' will pause the player for 5 seconds.
 ```
 
-#### Examples:
+#### Examples
 - To play a B sharp on octave n°5 for 1.2 seconds: `echo "B5#:1.2" | musicalbeeps`
 
 - To play the content of a file: `musicalbeeps file_to_play.txt`
@@ -72,7 +73,7 @@ pause:
 Example files are provided in the [**music_scores**](music_scores) directory of this repository.
 
 
-### From a python program:
+### From a python program
 ```Python
 import musicalbeeps
 
@@ -95,7 +96,7 @@ player.play_note("F5#")
 player.play_note("pause", 3.5)
 ```
 
-#### Initializations parameters for the `Player` class:
+#### Initializations parameters for the `Player` class
 
 |Name|Type|Default|Description|
 |:---:|:---:|:---:|:---|
