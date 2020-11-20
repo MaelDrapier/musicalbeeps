@@ -6,12 +6,12 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "PYPI_README.md").read_text()
 
 setup(
-    name="MusicalBeeps",
-    version="0.2.8",
+    name="musicalbeeps",
+    version="0.2.9",
     description="Play sound beeps corresponding to musical notes.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/MaelDrapier/MusicalBeeps",
+    url="https://github.com/MaelDrapier/musicalbeeps",
     author="Maël Drapier",
     author_email="mael.drapier@gmail.com",
     license="MIT",

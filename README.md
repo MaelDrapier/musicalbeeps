@@ -1,8 +1,8 @@
-# MusicalBeeps
-[![GitHub](https://img.shields.io/github/license/MaelDrapier/MusicalBeeps)](https://github.com/MaelDrapier/MusicalBeeps/blob/master/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/MusicalBeeps?color=blue)](https://pypi.org/project/MusicalBeeps/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/MusicalBeeps)](https://pypi.org/project/MusicalBeeps/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/MusicalBeeps?color=default)](https://pypi.org/project/MusicalBeeps/)
+# musicalbeeps
+[![GitHub](https://img.shields.io/github/license/MaelDrapier/musicalbeeps)](https://github.com/MaelDrapier/musicalbeeps/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/musicalbeeps?color=blue)](https://pypi.org/project/musicalbeeps/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/musicalbeeps)](https://pypi.org/project/musicalbeeps/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/musicalbeeps?color=default)](https://pypi.org/project/musicalbeeps/)
 
 A python package to play sound beeps corresponding to musical notes from the command line or another python program.
 
@@ -18,15 +18,15 @@ This package uses the [numpy](https://pypi.org/project/numpy/) and [simplaudio](
 
 ## Installation
 
-### From the [Python Package Index](https://pypi.org/project/MusicalBeeps/)
+### From the [Python Package Index](https://pypi.org/project/musicalbeeps/)
 
 `pip install musicalbeeps`
 
 ### From source
 
 ```
-$ git clone https://github.com/MaelDrapier/MusicalBeeps
-$ cd MusicalBeeps
+$ git clone https://github.com/MaelDrapier/musicalbeeps
+$ cd musicalbeeps
 $ python setup.py install
 ```
 
@@ -96,7 +96,7 @@ player.play_note("F5#")
 player.play_note("pause", 3.5)
 ```
 
-#### Initializations parameters for the `Player` class
+#### Initialization parameters for the `Player` class
 
 |Name|Type|Default|Description|
 |:---:|:---:|:---:|:---|

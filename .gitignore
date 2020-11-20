@@ -1,4 +1,4 @@
 *.pyc
 build/
 dist/
-MusicalBeeps.egg-info
+musicalbeeps.egg-info
